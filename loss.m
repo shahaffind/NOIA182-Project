@@ -10,7 +10,7 @@ function [ loss_val ] = loss( X, C, W )
     
     relevant_proba = C' .* log(all_proba + eps);
     
-    loss_val = sum(relevant_proba(:));
+    loss_val = - sum(relevant_proba(:));
     
 end
 
