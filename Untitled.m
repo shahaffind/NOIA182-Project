@@ -16,6 +16,6 @@ for i=1:iter
     eps = eps * 0.5;
     dist_f = abs(loss(X,C,W + d.*eps) - loss(X,C,W));
     grad = der_loss(X,C,W);
-    dist_g = abs(loss(X,C,W + d.*eps) - loss(X,C,W) - eps*d(:)'*grad(:));
+    dist_g = abs(loss(X,C,W + d.*eps) - loss(X,C,W) + eps*d(:)'*grad(:));
     disp([dist_f, dist_g]);
 end  
