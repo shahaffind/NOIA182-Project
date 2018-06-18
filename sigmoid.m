@@ -1,4 +1,4 @@
-function [ y ] = sigmoid( x, w, b )
-    y = 1 / (1 + exp(-x'*w + b));
+function [ y ] = sigmoid( x )
+    y = 1 / (1 + exp(-x));
 end
 

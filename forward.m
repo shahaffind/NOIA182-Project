@@ -1,6 +1,8 @@
 function [ loss_val, Xis ] = forward( X, C, Theta, n_layers )
     
     [sample_size, n_samples] = size(X);
+    [n_labels, ~] = size(C);
+    
     Xis = zeros(sample_size, n_samples, n_layers);
     X_prev = X;
     for i=1:n_layers
@@ -9,6 +11,10 @@ function [ loss_val, Xis ] = forward( X, C, Theta, n_layers )
         X_prev = Xis(:,:,i);
     end
     
+    loss_weights_loc = i*((sample_size^2)*2 + sample_size) + 1;
+    W = Theta(loss_weights_loc : loss_weights_loc+n_labels);
+    
+    loss_val = loss(X_prev, C, W);
 end
 
 
@@ -21,5 +27,5 @@ function [ W1, W2, b ] = get_layer_weights( Theta, layer, sample_size )
 end
 
 function [ X_next ] = f( W1, W2, b, X_prev)
-    X_next = X + W2 * sigmoid(X_prev, W1, b);
+    X_next = X + W2 * sigmoid(X_prev'*W1 + b);
 end
