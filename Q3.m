@@ -8,7 +8,7 @@ C = Ct;
 
 W = randn(n_point_size, n_classes);
  
-[W_new, W_all, iters] = SGD(@der_loss, Y, C, W, 10, 10);
+[W_new, W_all, iters] = SGD(@grad_loss, Y, C, W, 10, 10);
 
 correct_percent = calc_correct(Y,C,W);
 disp(correct_percent);
