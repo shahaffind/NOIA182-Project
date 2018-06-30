@@ -1,4 +1,4 @@
-function [ res ] = jac_theta_mul( x, W1, W2, b, v )
+function [ res ] = ResNN_jac_theta_mul( x, W1, W2, b, v )
     [n,~] = size(W1);
     
     Jbv = mul_jac_b(x, W1, W2, b, v(1:n));

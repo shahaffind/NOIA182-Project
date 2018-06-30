@@ -1,4 +1,4 @@
-function [ res ] = jac_x_t_mul( X, W1, W2, b, v )
+function [ res ] = ResNN_jac_x_t_mul( X, W1, W2, b, v )
     
     [~, m] = size(X);
 
