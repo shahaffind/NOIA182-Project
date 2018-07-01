@@ -1,6 +1,8 @@
-function [ loss_val ] = loss( X, C, W )
+function [ loss_val ] = loss( X, C, W, b )
     
-    log_numer = X' * W;
+    [~, n_samples] = size(X);
+
+    log_numer = X' * W + repmat(b', n_samples, 1);
     max_log_numer = max(log_numer, [], 2);
     log_numer = bsxfun(@minus, log_numer, max_log_numer);
     numerator = exp(log_numer);

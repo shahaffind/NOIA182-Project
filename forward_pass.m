@@ -1,20 +1,24 @@
-function [ loss_val, Xis ] = forward( X, C, Theta, n_layers )
+function [ loss_val, Xis ] = forward_pass( X, C, Theta, n_layers )
     
     [sample_size, n_samples] = size(X);
     [n_labels, ~] = size(C);
     
-    Xis = zeros(sample_size, n_samples, n_layers);
-    X_prev = X;
+    Xis = zeros(sample_size, n_samples, n_layers+1);
+    Xis(:,:,1) = X;
     for k=1:n_layers
         [W1, W2, b] = get_layer_weights(Theta, k, sample_size);
-        Xis(:,:,k) = ResNN(X_prev, W1, W2, b);
-        X_prev = Xis(:,:,k);
+        W1 = reshape(W1, [sample_size,sample_size]);
+        W2 = reshape(W2, [sample_size,sample_size]);
+        
+        Xis(:,:,k+1) = ResNN(Xis(:,:,k), W1, W2, b);
     end
     
-    loss_weights_loc = k*((sample_size^2)*2 + sample_size) + 1;
-    W = Theta(loss_weights_loc : loss_weights_loc+n_labels);
+    loss_weights_loc = n_layers*((sample_size^2)*2 + sample_size);
+    b = Theta(loss_weights_loc + 1 : loss_weights_loc + n_labels);
+    W = Theta(loss_weights_loc + 1 + n_labels : loss_weights_loc + n_labels +  sample_size * n_labels);
+    W = reshape(W, [sample_size, n_labels]);
     
-    loss_val = loss(X_prev, C, W);
+    loss_val = loss(Xis(:,:,n_layers+1), C, W, b);
 end
 
 function [ W1, W2, b ] = get_layer_weights( Theta, layer, sample_size )

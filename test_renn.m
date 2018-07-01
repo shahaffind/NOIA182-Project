@@ -26,12 +26,12 @@ for i=1:iter
     
     %%%% grad w.r.t weights
     %curr_dist_f = norm(f(W1 + d2.*eps, W2 + d3.*eps, b + d1*eps, X) - f(W1,W2,b,X));
-    %grad = jac_theta_mul(X, W1, W2, b, eps*vec_d);
+    %grad = ResNN_jac_theta_mul(X, W1, W2, b, eps*vec_d);
     %curr_dist_g = norm(f(W1 + d2.*eps, W2 + d3.*eps, b + d1*eps, X) - f(W1,W2,b,X) - grad);
     
     %%%% grad w.r.t. X
     curr_dist_f = norm(f(W1, W2, b, X + dx*eps) - f(W1,W2,b,X));
-    grad = jac_x_mul(X, W1, W2, b, eps*dx);
+    grad = ResNN_jac_x_mul(X, W1, W2, b, eps*dx);
     curr_dist_g = norm(f(W1, W2, b, X + dx*eps) - f(W1,W2,b,X) - grad);
     
     disp([dist_f / curr_dist_f, dist_g / curr_dist_g]);
@@ -45,15 +45,15 @@ for i = 1:iter
     %%%% jac w.r.t weights
     %u = randn(size(vec_d));
     %v = randn(dim, 1);
-    %jac = jac_theta_mul(X, W1, W2, b, u);
-    %jac_t = jac_theta_t_mul(X, W1, W2, b, v);
+    %jac = ResNN_jac_theta_mul(X, W1, W2, b, u);
+    %jac_t = ResNN_jac_theta_t_mul(X, W1, W2, b, v);
     %disp(abs(v' * jac - u' * jac_t));
     
     %%%% jac w.r.t X
     u = randn(dim,1);
     v = randn(dim,1);
-    jac = jac_x_mul(X, W1, W2, b, u);
-    jac_t = jac_x_t_mul(X, W1, W2, b, v);
+    jac = ResNN_jac_x_mul(X, W1, W2, b, u);
+    jac_t = ResNN_jac_x_t_mul(X, W1, W2, b, v);
     disp(abs(v' * jac - u' * jac_t));
     
 end

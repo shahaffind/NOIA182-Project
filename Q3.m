@@ -1,4 +1,4 @@
-load('D:\NOIA-proj\data\PeaksData.mat')
+load('.\data\PeaksData.mat')
 
 Y = Yt;
 C = Ct;
@@ -10,13 +10,14 @@ W = randn(n_point_size, n_classes);
  
 [W_new, W_all, iters] = SGD(@loss_grad_theta, Y, C, W, 10, 10);
 
-correct_percent = calc_correct(Y,C,W);
+correct_percent = calc_correct(Yv,Cv,W);
 disp(correct_percent);
 
 for i = 1:iters
-    W_curr = W_all(:,:,i);
+    W_curr = W_all(:,i);
+    W_curr = reshape(W_curr(1:n_point_size*n_classes), size(W));
     
-    correct_percent = calc_correct(Y,C,W_curr);
+    correct_percent = calc_correct(Yv,Cv,W_curr);
     disp(correct_percent);
 end
 
