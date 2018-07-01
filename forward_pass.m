@@ -1,4 +1,4 @@
-function [ loss_val, Xis ] = forward_pass( X, C, Theta, n_layers )
+function [ all_proba, loss_val, Xis ] = forward_pass( X, C, Theta, n_layers )
     
     [sample_size, n_samples] = size(X);
     [n_labels, ~] = size(C);
@@ -19,6 +19,7 @@ function [ loss_val, Xis ] = forward_pass( X, C, Theta, n_layers )
     W = reshape(W, [sample_size, n_labels]);
     
     loss_val = loss(Xis(:,:,n_layers+1), C, W, b);
+    all_proba = softmax(Xis(:,:,n_layers+1), W, b);
 end
 
 function [ W1, W2, b ] = get_layer_weights( Theta, layer, sample_size )

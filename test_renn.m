@@ -25,14 +25,14 @@ for i=1:iter
     eps = eps * 0.5;
     
     %%%% grad w.r.t weights
-    %curr_dist_f = norm(f(W1 + d2.*eps, W2 + d3.*eps, b + d1*eps, X) - f(W1,W2,b,X));
-    %grad = ResNN_jac_theta_mul(X, W1, W2, b, eps*vec_d);
-    %curr_dist_g = norm(f(W1 + d2.*eps, W2 + d3.*eps, b + d1*eps, X) - f(W1,W2,b,X) - grad);
+    curr_dist_f = norm(f(W1 + d2.*eps, W2 + d3.*eps, b + d1*eps, X) - f(W1,W2,b,X));
+    grad = ResNN_jac_theta_mul(X, W1, W2, b, eps*vec_d);
+    curr_dist_g = norm(f(W1 + d2.*eps, W2 + d3.*eps, b + d1*eps, X) - f(W1,W2,b,X) - grad);
     
     %%%% grad w.r.t. X
-    curr_dist_f = norm(f(W1, W2, b, X + dx*eps) - f(W1,W2,b,X));
-    grad = ResNN_jac_x_mul(X, W1, W2, b, eps*dx);
-    curr_dist_g = norm(f(W1, W2, b, X + dx*eps) - f(W1,W2,b,X) - grad);
+    %curr_dist_f = norm(f(W1, W2, b, X + dx*eps) - f(W1,W2,b,X));
+    %grad = ResNN_jac_x_mul(X, W1, W2, b, eps*dx);
+    %curr_dist_g = norm(f(W1, W2, b, X + dx*eps) - f(W1,W2,b,X) - grad);
     
     disp([dist_f / curr_dist_f, dist_g / curr_dist_g]);
     dist_f = curr_dist_f;
