@@ -1,4 +1,4 @@
-function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, max_epoch )
+function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, max_epoch, Yv, Cv )
     
     samples_size = size(X);
     n_samples = samples_size(2);
@@ -27,16 +27,23 @@ function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_siz
             
             %d_k = -g_k;
             if i <= 50
-                a_k = 1/100;
+                a_k = 1/(100);
             else
-                a_k = 1/1000;
+                a_k = 1/(1000);
             end
             g_k = g_k / batch_size;
             m_k = gamma * m_prev + a_k * g_k;
             Theta_k = Theta_k - m_k;
         end
         Theta_all(:, i) = Theta_k;
-    end
+        
+        if mod(i, 10) == 0
+            [all_proba, loss_val, ~] = forward_pass(Yv, Cv, Theta_k, n_layers);
+            [c_p, R] = correct_percent(all_proba, Cv);
+            viewFeatures2D(Yv, R);
 
+            fprintf('iter:%d\n\tloss: %f\n\tcorrect: %f\n\n', i, loss_val, c_p);
+        end
+    end
 end
 
