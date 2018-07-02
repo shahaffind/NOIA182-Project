@@ -3,7 +3,7 @@ load('.\data\SwissRollData.mat')
 % parameters
 [n_labels, ~] = size(Ct);
 [dim, ~] = size(Yt);
-iter = 1000;
+iter = 50;
 n_layers = 5;
 batch_size = 500;
 

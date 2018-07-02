@@ -1,13 +1,15 @@
 function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, max_epoch )
     
-    Theta_k = Theta;
-    
     samples_size = size(X);
     n_samples = samples_size(2);
     
     Theta_size = size(Theta);
     
     Theta_all = zeros(Theta_size(1), max_epoch);
+    Theta_k = Theta;
+    m_prev = 0;
+    
+    gamma = 0.5;
     
     for i = 1:max_epoch
         idxs = randperm(n_samples);
@@ -22,15 +24,16 @@ function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_siz
             if norm(g_k) < 1e-3
                 break
             end
-
-            d_k = -g_k;
+            
+            %d_k = -g_k;
             if i <= 50
                 a_k = 1/100;
             else
                 a_k = 1/1000;
             end
-
-            Theta_k = Theta_k + a_k * d_k;
+            g_k = g_k / batch_size;
+            m_k = gamma * m_prev + a_k * g_k;
+            Theta_k = Theta_k - m_k;
         end
         Theta_all(:, i) = Theta_k;
     end
