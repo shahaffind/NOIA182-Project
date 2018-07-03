@@ -3,15 +3,15 @@ load('./data/PeaksData.mat')
 % parameters
 [n_labels, ~] = size(Ct);
 [dim, ~] = size(Yt);
-iter = 10000;
-n_layers = 5;
-batch_size = 50;
+iter = 30000;
+n_layers = 3;
+batch_size = 200;
 
 theta_layer_size = dim + (dim^2) * 2;  % 2* NxN matrix + N vector
 loss_layer_size = n_labels * (dim + 1);  % NxL matrix + L vector
 
 % init all weights
-Theta = randn(n_layers * theta_layer_size + loss_layer_size, 1)*3;
+Theta = randn(n_layers * theta_layer_size + loss_layer_size, 1);
 
 % fit the data
 [Theta_new, Theta_all, iters] = ResNN_SGD(Yt, Ct, Theta, n_layers, batch_size, iter, Yv, Cv);

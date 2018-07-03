@@ -1,6 +1,6 @@
 function [ g_theta ] = back_propagation( Xis, C, Theta, n_layers )
     
-    [sample_size, n_samples] = size(Xis(:,:,1));
+    [sample_size, ~] = size(Xis(:,:,1));
     [n_labels, ~] = size(C);
     
     theta_layer_size = sample_size + (sample_size^2) * 2; % 2* NxN matrix + N vector
@@ -15,7 +15,6 @@ function [ g_theta ] = back_propagation( Xis, C, Theta, n_layers )
     g_theta(loss_weights_start_loc + 1 : loss_weights_end_loc) = loss_grad_theta(Xis(:,:,n_layers+1), C, W_loss, b_loss);
     
     g_x = loss_grad_x(Xis(:,:,n_layers+1), C, W_loss, b_loss);
-    g_x = sum(g_x, 2) / n_samples;
     
     for k = n_layers:-1:1
         layer_weights = Theta((k - 1)*theta_layer_size + 1 : k*theta_layer_size);

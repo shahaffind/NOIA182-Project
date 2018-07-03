@@ -7,9 +7,8 @@ function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_siz
     
     Theta_all = zeros(Theta_size(1), max_epoch);
     Theta_k = Theta;
-    m_prev = 0;
-    
-    gamma = 0.5;
+
+    alpha_base = batch_size / n_samples;
     
     for i = 1:max_epoch
         idxs = randperm(n_samples);
@@ -20,20 +19,13 @@ function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_siz
             
             [~, ~, Xis] = forward_pass(X_k, C_k, Theta_k, n_layers);
             g_k = back_propagation(Xis, C_k, Theta_k, n_layers);
-
-            if norm(g_k) < 1e-3
-                break
-            end
             
-            %d_k = -g_k;
-            if i <= 50
-                a_k = 1/(100);
+            if i <= 100
+                a_k = alpha_base /(10);
             else
-                a_k = 1/(1000);
+                a_k = alpha_base /(sqrt(i));
             end
-            g_k = g_k / batch_size;
-            m_k = gamma * m_prev + a_k * g_k;
-            Theta_k = Theta_k - m_k;
+            Theta_k = Theta_k - a_k * g_k;
         end
         Theta_all(:, i) = Theta_k;
         
