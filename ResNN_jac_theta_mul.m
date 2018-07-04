@@ -11,7 +11,7 @@ end
 
 function [ res ] = mul_jac_b( x, W1, W2, b, v )
     inner = W1 * x + b;
-    sig_inner = arrayfun(@sigmoid,inner);
+    sig_inner = sigmoid(inner);
     der_sig_inner = sig_inner .* (1-sig_inner);
     
     res = W2 * diag(der_sig_inner) * v;
@@ -21,7 +21,7 @@ function [ res ] = mul_jac_W1( x, W1, W2, b, v )
     [n, ~] = size(x);
     
     inner = W1 * x + b;
-    sig_inner = arrayfun(@sigmoid,inner);
+    sig_inner = sigmoid(inner);
     der_sig_inner = sig_inner .* (1-sig_inner);
     left_side = W2 * diag(der_sig_inner);
     
@@ -34,7 +34,7 @@ function [ res ] = mul_jac_W2( x, W1, b, v )
     [n, ~] = size(x);
 
     inner = W1 * x + b;
-    sig_inner = arrayfun(@sigmoid,inner);
+    sig_inner = sigmoid(inner);
     
     res = kron(sig_inner', eye(n)) * v;  % n times n*m
 end

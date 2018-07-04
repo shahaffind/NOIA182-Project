@@ -7,9 +7,6 @@ function [ all_proba, loss_val, Xis ] = forward_pass( X, C, Theta, n_layers )
     Xis(:,:,1) = X;
     for k=1:n_layers
         [W1, W2, b] = get_layer_weights(Theta, k, sample_size);
-        W1 = reshape(W1, [sample_size,sample_size]);
-        W2 = reshape(W2, [sample_size,sample_size]);
-        
         Xis(:,:,k+1) = ResNN(Xis(:,:,k), W1, W2, b);
     end
     
@@ -25,7 +22,9 @@ end
 function [ W1, W2, b ] = get_layer_weights( Theta, layer, sample_size )
     theta_layer_size = (sample_size^2)*2 + sample_size;
     layer_weights = Theta((layer-1)*theta_layer_size + 1 : layer*theta_layer_size);
-    W1 = layer_weights(1: sample_size^2);
-    W2 = layer_weights(sample_size^2 + 1: 2*sample_size^2);
-    b = layer_weights(2*sample_size^2 + 1:theta_layer_size);
+    b = layer_weights(1 : sample_size);
+    W1 = layer_weights(sample_size + 1 : sample_size + sample_size^2);
+    W2 = layer_weights(sample_size + sample_size^2 + 1 : theta_layer_size);
+    W1 = reshape(W1, [sample_size,sample_size]);
+    W2 = reshape(W2, [sample_size,sample_size]);
 end

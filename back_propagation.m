@@ -12,7 +12,8 @@ function [ g_theta ] = back_propagation( Xis, C, Theta, n_layers )
     W_loss = reshape(W_loss, [sample_size, n_labels]);
     
     g_theta = zeros(size(Theta));
-    g_theta(loss_weights_start_loc + 1 : loss_weights_end_loc) = loss_grad_theta(Xis(:,:,n_layers+1), C, W_loss, b_loss);
+    g_w_loss = loss_grad_theta(Xis(:,:,n_layers+1), C, W_loss, b_loss);
+    g_theta(loss_weights_start_loc + 1 : loss_weights_end_loc) = g_w_loss;
     
     g_x = loss_grad_x(Xis(:,:,n_layers+1), C, W_loss, b_loss);
     
@@ -25,10 +26,7 @@ function [ g_theta ] = back_propagation( Xis, C, Theta, n_layers )
         W2 = reshape(W2, [sample_size,sample_size]);
         
         g_w_layer = ResNN_jac_theta_t_mul(Xis(:,:,k), W1, W2, b, g_x);
-        
         g_theta((k-1)*theta_layer_size + 1 : k*theta_layer_size) = g_w_layer;
-        
         g_x = ResNN_jac_x_t_mul(Xis(:,:,k), W1, W2, b, g_x);
-        
     end
 end

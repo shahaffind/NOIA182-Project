@@ -1,32 +1,40 @@
-load('./data/PeaksData.mat')
+C = [1;0;0;0;0];
+[n_labels, n_samples] = size(C);
+dim = 3;
+X = randn(dim, n_samples);
 
-% parameters
-[n_labels, ~] = size(Ct);
-[dim, ~] = size(Yt);
-iter = 30000;
-n_layers = 3;
-batch_size = 50;
+n_layers = 1;
 
 theta_layer_size = dim + (dim^2) * 2;  % 2* NxN matrix + N vector
 loss_layer_size = n_labels * (dim + 1);  % NxL matrix + L vector
 
 % init all weights
-Theta = randn(n_layers * theta_layer_size + loss_layer_size, 1)*2;
+Theta = randn(n_layers * theta_layer_size + loss_layer_size, 1);
 
-% fit the data
-[Theta_new, Theta_all, iters] = ResNN_SGD(Yt, Ct, Theta, n_layers, batch_size, iter, Yv, Cv);
+iter = 20;
+d_Theta = randn(n_layers * theta_layer_size + loss_layer_size, 1);
 
-[all_proba, loss_val, ~] = forward_pass(Yv, Cv, Theta, n_layers);
-[c_p, R] = correct_percent(all_proba, Cv);
-viewFeatures2D(Yv, R);
+eps = 1;
 
-fprintf('iter:0\n\tloss: %f\n\tcorrect: %f\n\n', loss_val, c_p);
+dist_f = inf;
+dist_g = inf;
 
-for i = 1:iters
-    Theta_curr = Theta_all(:,i);
-    [all_proba, loss_val, ~] = forward_pass(Yv, Cv, Theta_curr, n_layers);
-    [c_p, R] = correct_percent(all_proba, Cv);
-    viewFeatures2D(Yv, R);
+% forward
+[~, base_loss_val, Xis] = forward_pass(X, C, Theta, n_layers);
+
+% backward
+grad = back_propagation(Xis, C, Theta, n_layers);
+
+for i=1:iter
+    eps = eps * 0.5;
     
-    fprintf('iter:%d\n\tloss: %f\n\tcorrect: %f\n\n', i, loss_val, c_p);
+    [~, loss_val, ~] = forward_pass(X, C, Theta + eps*d_Theta, n_layers);
+    
+    curr_dist_f = abs(loss_val - base_loss_val);
+    curr_dist_g = abs(loss_val - base_loss_val - eps*d_Theta'*grad);
+    
+    disp([dist_f / curr_dist_f, dist_g / curr_dist_g]);
+    dist_f = curr_dist_f;
+    dist_g = curr_dist_g;
 end
+

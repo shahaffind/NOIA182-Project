@@ -1,3 +1,3 @@
-function [ y ] = sigmoid( x )
-    y = 1 / (1 + exp(-x));
+function [ Y ] = sigmoid( X )
+    Y = 1 ./ (1 + exp(-X));
 end

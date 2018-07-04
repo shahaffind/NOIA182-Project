@@ -12,9 +12,6 @@ function [ res ] = ResNN_jac_theta_t_mul( X, W1, W2, b, v )
     
     Jw2tV = mul_jac_W2_t(X, W1, b, v);  % n times n*m
     Jw2tV_avg = Jw2tV(:);
-%     Jw2tV = reshape(Jw2tV, [n, n, m]);  % n times n times m
-%     Jw2tV_avg = (1 / m) * sum(Jw2tV, 3);  % avg over 3rd axis, now n times n
-%     Jw2tV_avg = Jw2tV_avg(:);
     
     res = vertcat(JbtV_avg, Jw1tV_avg, Jw2tV_avg);
 end
@@ -22,13 +19,10 @@ end
 function [ res ] = mul_jac_b_t( X, W1, W2, b, v )
     [~, m] = size(X);
     
-%     v_rep = repmat(v, 1, m);
-    v_rep = v;
-    
     inner = W1 * X + repmat(b, 1, m);
-    outer = W2' * v_rep;
+    outer = W2' * v;
     
-    sig_inner = arrayfun(@sigmoid,inner);
+    sig_inner = sigmoid(inner);
     der_sig_inner = sig_inner .* (1-sig_inner);
     
     res = der_sig_inner .* outer;  % n times m
@@ -50,14 +44,9 @@ end
 function [ res ] = mul_jac_W2_t( X, W1, b, v )
     [~, m] = size(X);
     
-%     v_rep = repmat(v, 1, m);
-    v_rep = v;
-    
     inner = W1 * X + repmat(b, 1, m);
-    sig_inner = arrayfun(@sigmoid,inner);
+    sig_inner = sigmoid(inner);
     
-    res = v_rep * sig_inner' / m;
-%     flat_sig_inner = sig_inner(:);  % n*m times 1
-%     res = v * flat_sig_inner';  % n times n*m
+    res = v * sig_inner' / m;
 
 end
