@@ -1,14 +1,13 @@
-function [ theta_k, theta_all, i ] = loss_SGD( X, C, theta, batch_size, max_epoch )
+function [ Theta_k, records, i ] = loss_SGD( X, C, theta, batch_size, max_epoch, Yv, Cv, record_every )
     
     [sample_size, n_samples] = size(X);
     [n_classes, ~] = size(C);
     
     [theta_size, ~] = size(theta);
     
-    theta_all = zeros(theta_size, max_epoch);
-    theta_k = theta;
+    records = zeros(ceil(max_epoch / record_every), 2);
     
-    alpha_base = batch_size / n_samples;
+    Theta_k = theta;
     
     for i = 1:max_epoch
         idxs = randperm(n_samples);
@@ -17,19 +16,32 @@ function [ theta_k, theta_all, i ] = loss_SGD( X, C, theta, batch_size, max_epoc
             X_k = X(:,idx_k);
             C_k = C(:,idx_k);
             
-            b_k = theta_k(1:n_classes);
-            W_k = reshape(theta_k(n_classes+1:theta_size), [sample_size,n_classes]);
+            b_k = Theta_k(1:n_classes);
+            W_k = reshape(Theta_k(n_classes+1:theta_size), [sample_size,n_classes]);
             
-            g_k = loss_grad_theta(X_k, C_k, W_k, b_k); % todo: fix zeros to b vector
+            g_k = loss_grad_theta(X_k, C_k, W_k, b_k);
 
             if i <= 100
-                a_k = alpha_base /(10);
+                a_k = 1 / 100;
             else
-                a_k = alpha_base /(sqrt(i));
+                a_k = 1 / (10*sqrt(i));
             end
-            theta_k = theta_k - a_k * g_k;
+            Theta_k = Theta_k - a_k * g_k;
         end
-        theta_all(:, i) = vertcat(b_k,W_k(:));
+        
+        if mod(i, record_every) == 0
+            b_k = Theta_k(1:n_classes);
+            W_k = reshape(Theta_k(n_classes+1:theta_size), [sample_size,n_classes]);
+            
+            loss_val = loss(Yv, Cv, W_k, b_k);
+            all_proba = softmax(Yv, W_k, b_k);
+            [c_p, R] = correct_percent(all_proba, Cv);
+            records(i / record_every, :) = [loss_val, c_p];
+            
+            viewFeatures2D(Yv, R);
+            drawnow update
+            fprintf('iter:%d\n\tloss: %f\n\tcorrect: %f\n\n', i, loss_val, c_p);
+        end
     end
 
 end

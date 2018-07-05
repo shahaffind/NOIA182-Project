@@ -10,6 +10,6 @@ function [ all_proba ] = softmax( X, W, b )
     denominator = sum(numerator, 2);
     
     all_proba = diag(denominator.^(-1)) * numerator;
-
+    
 end
 

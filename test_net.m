@@ -3,7 +3,7 @@ C = [1;0;0;0;0];
 dim = 3;
 X = randn(dim, n_samples);
 
-n_layers = 1;
+n_layers = 5;
 
 theta_layer_size = dim + (dim^2) * 2;  % 2* NxN matrix + N vector
 loss_layer_size = n_labels * (dim + 1);  % NxL matrix + L vector

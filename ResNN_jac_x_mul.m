@@ -1,5 +1,6 @@
 function [ res ] = ResNN_jac_x_mul( x, W1, W2, b, v )
-    
+    % jacobian times vector, for tests
+
     [n, ~] = size(W1);
 
     inner = W1 * x + b;

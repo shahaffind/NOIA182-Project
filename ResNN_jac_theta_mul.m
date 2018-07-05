@@ -1,4 +1,6 @@
 function [ res ] = ResNN_jac_theta_mul( x, W1, W2, b, v )
+    % jacobian times vector, for tests
+
     [n,~] = size(W1);
     
     Jbv = mul_jac_b(x, W1, W2, b, v(1:n));

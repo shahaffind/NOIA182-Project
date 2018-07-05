@@ -1,19 +1,11 @@
-function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, max_epoch, Yv, Cv )
+function [ Theta_k, records, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, max_epoch, Yv, Cv, record_every )
     
     [~, n_samples] = size(X);
     
-%     Theta_size = size(Theta);
-    
-%     Theta_all = zeros(Theta_size(1), max_epoch);
-    Theta_all = 0;
+    records = zeros(ceil(max_epoch / record_every), 2);
     Theta_k = Theta;
-
-    alpha_base = batch_size / (n_samples);
     
-%     for i = 1:max_epoch
-    i = 0;
-    while 1
-        i = i+1;
+    for i=1:max_epoch
         idxs = randperm(n_samples);
         for k = 1:(n_samples / batch_size)
             idx_k = idxs((k-1) * batch_size + 1 : k * batch_size);
@@ -24,17 +16,18 @@ function [ Theta_k, Theta_all, i ] = ResNN_SGD( X, C, Theta, n_layers, batch_siz
             g_k = back_propagation(Xis, C_k, Theta_k, n_layers);
             
             if i <= 100
-                a_k = alpha_base / 10;
+                a_k = 1 / 100;
             else
-                a_k = alpha_base /(sqrt(i));
+                a_k = 1 / (10*sqrt(i));
             end
             Theta_k = Theta_k - a_k * g_k;
         end
-%         Theta_all(:, i) = Theta_k;
         
-        if mod(i, 10) == 0
+        if mod(i, record_every) == 0
             [all_proba, loss_val, ~] = forward_pass(Yv, Cv, Theta_k, n_layers);
             [c_p, R] = correct_percent(all_proba, Cv);
+            records(i / record_every, :) = [loss_val, c_p];
+            
             viewFeatures2D(Yv, R);
             drawnow update
             fprintf('iter:%d\n\tloss: %f\n\tcorrect: %f\n\n', i, loss_val, c_p);
