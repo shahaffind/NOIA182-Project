@@ -10,5 +10,5 @@ function [ G ] = loss_grad_x( X, C, W, b )
     
     all_proba = softmax(X, W, b);
     
-    G = W * (all_proba' - C);
+    G = W * (all_proba - C);
 end

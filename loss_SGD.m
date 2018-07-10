@@ -1,4 +1,4 @@
-function [ Theta_k, records, i ] = loss_SGD( X, C, theta, batch_size, max_epoch, Yv, Cv, record_every )
+function [ Theta_k, records, i ] = loss_SGD( X, C, theta, batch_size, learning_rate, max_epoch, Yv, Cv, record_every )
     
     [sample_size, n_samples] = size(X);
     [n_classes, ~] = size(C);
@@ -22,9 +22,9 @@ function [ Theta_k, records, i ] = loss_SGD( X, C, theta, batch_size, max_epoch,
             g_k = loss_grad_theta(X_k, C_k, W_k, b_k);
 
             if i <= 100
-                a_k = 1 / 100;
+                a_k = learning_rate;
             else
-                a_k = 1 / (10*sqrt(i));
+                a_k = (10 * learning_rate) / sqrt(i);
             end
             Theta_k = Theta_k - a_k * g_k;
         end
@@ -38,8 +38,8 @@ function [ Theta_k, records, i ] = loss_SGD( X, C, theta, batch_size, max_epoch,
             [c_p, R] = correct_percent(all_proba, Cv);
             records(i / record_every, :) = [loss_val, c_p];
             
-            viewFeatures2D(Yv, R);
-            drawnow update
+%             viewFeatures2D(Yv, R);
+%             drawnow update
             fprintf('iter:%d\n\tloss: %f\n\tcorrect: %f\n\n', i, loss_val, c_p);
         end
     end

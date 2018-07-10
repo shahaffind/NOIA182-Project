@@ -1,0 +1,146 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage[]{algorithm2e}
+
+\graphicspath{ {./graphics/} }
+
+\numberwithin{equation}{section}
+\setlength{\parindent}{0cm}
+
+\title{Numerical Optimization and its Applications: Final Project}
+\author{
+    Shahaf Finder\\
+    204037618
+    \and
+    Roy Uziel\\
+    203398854
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Objective Loss Function}
+\begin{itemize}
+ \item
+  We've computed Softmax and Loss in softmax.m and loss.m.
+  \item
+  The derivatives for the Softmax are in loss{\_}grad{\_}theta.m (gradient by weights) and loss{\_}grad{\_}x.m (gradient by X).
+  \item
+  test{\_}loss.m is the gradient test for the loss function.
+  \item
+  loss{\_}SGD.m is an SGD variant for the loss function.
+  \item
+  Q3.m is a script used to run the SGD.
+\end{itemize}
+We didn't notice a significant difference using different batch size and learning rate.\\
+
+Results for learning rate: 0.005, batch size: 100\\
+
+for validation data:\\
+\includegraphics[width=\textwidth]{loss_sgd_val.png}\\
+
+for training data:\\
+\includegraphics[width=\textwidth]{loss_sgd_train.png}\\
+
+\section{Residual Neural Network}
+\subsection{Jacobian Transpose Times Vector}
+ResNN{\_}jac{\_}theta{\_}t{\_}mul.m and ResNN{\_}jac{\_}x{\_}t{\_}mul.m are the jacobian transpose times vector for each layer.\\
+
+Both can receive multiple samples X (as an n times m matrix), and their respectives V (as an n times m matrix) to multiply by.
+\begin{itemize}
+\item 
+ResNN{\_}jac{\_}theta{\_}t{\_}mul.m returns the average result among all samples.
+\item
+ResNN{\_}jac{\_}x{\_}t{\_}mul.m returns the multiplication of each sample with it's v (as an n times m matrix).
+\end{itemize}
+
+In order to test those functions we've created two auxiliary functions ResNN{\_}jac{\_}theta{\_}mul.m ResNN{\_}jac{\_}x{\_}mul.m\\
+We used the gradient test to make sure these functions are correct, and then used the jacobian transpose test with the required functions.\\
+Those tests are in test{\_}resnn.m.
+
+\subsection{Forward Pass and Back Propogation}
+forward{\_}pass.m and back{\_}propogation.m are the functions required.\\
+
+To test them we created test{\_}net.m that uses forward pass and back propogation to compute the gradient,\\
+then each iteration we used forward pass to compute the loss value after moving to a direction.\\
+
+\subsection{SGD and Conclusions}
+ResNN{\_}SGD.m is the SGD variant for the entire network.\\
+run{\_}net.m is a script used to run the SGD.\\
+
+We've tested different network lengths and batch sizes on different data sets.\\
+We got to the following conclusions:\\
+\begin{itemize}
+  \item
+  Increasing batch size increased the training time, and above 50 it had little effect on results.
+  \item
+  Each dataset required different network lengths for good results.
+  \item
+  Lowering the learning rate resulted in a more steady but slower convergence. We found out that, generally, 0.01 is a good balance between speed and steadiness.
+\end{itemize}
+
+\section{Improving on SGD}
+In seek to improve the results of SGD, we tried the following:
+\begin{itemize}
+ \item 
+ Decreasing alpha according to iteration\\
+ After 100 iterations we calculated a new alpha by: $learning{\_}rate * 5 / sqrt(i)$.\\
+ This is in order to half the learning rate and keep decreasing as the iterations continue.\\
+ The method gave minor improvement.
+ \item
+ Adding momentum (as seen in class)\\
+ The method got much better results in convergence speed, but was unsteady in the long run.\\
+ So in order to deal with the unsteadiness, after 100 iterations we calculated a new gamma using: $moment{\_}gamma * 10 / sqrt(i)$.\\
+ This decreases the momentum as itereations continue.\\
+ The results were a fast convergence in a more steady way.
+ \item
+ Taking only the rejection part of the momentum.\\
+ While trying to optimize even further, we tried to take only the projection of the momentum over the gradient.\\
+ We calculated it by: $m{\_}proj = g * m' * g / (norm(g)^2)$.\\
+ We found out that by adding only the projection part, the results got worse, so we tried adding the rejection part.\\
+ Calculated by: $m{\_}rej = m - m{\_}proj$.\\
+ The results were usually better, or at worse - the same, than the normal momentum.
+\end{itemize}
+
+Using these 3 imrovements made us able to reduce the number of layers without hurting the results too much.
+
+\newpage
+
+Comparison between the 3 improvements.\\
+
+Blue - using only decreasing alpha.\\
+Orange - using decreasing alpha, and decreasing momentum.\\
+Yellow - using all of the improvements specified above.\\
+
+GMM\\
+batch size: 50, learning rate: 0.01, number of layers: 1, gamma(only for momentum): 0.7\\
+\includegraphics[width=\textwidth]{rej_m_gmm_1layer.png}
+
+batch size: 50, learning rate: 0.01, number of layers: 2, gamma(only for momentum): 0.7\\
+\includegraphics[width=\textwidth]{rej_m_gmm_2layers.png}
+
+\newpage
+Peaks\\
+batch size: 50, learning rate: 0.01, number of layers: 4, gamma(only for momentum): 0.7\\
+\includegraphics[width=\textwidth]{rej_m_peaks_4layers.png}
+
+batch size: 50, learning rate: 0.01, number of layers: 6, gamma(only for momentum): 0.7\\
+\includegraphics[width=\textwidth]{rej_m_peaks_6layers.png}
+
+\newpage
+SwissRoll\\
+batch size: 50, learning rate: 0.01, number of layers: 4, gamma(only for momentum): 0.7\\
+\includegraphics[width=\textwidth]{rej_m_swissroll_4layers.png}
+
+batch size: 50, learning rate: 0.01, number of layers: 5, gamma(only for momentum): 0.7\\
+\includegraphics[width=\textwidth]{rej_m_swissroll_5layers.png}
+
+
+\end{document}

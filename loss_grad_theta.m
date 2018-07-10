@@ -10,7 +10,7 @@ function [ g ] = loss_grad_theta( X, C, W, b )
     
     all_proba = softmax(X, W, b);
     
-    diff = all_proba - C';
+    diff = all_proba' - C';
     g_W = X * (diff);
     g_b = sum(diff, 1);
     

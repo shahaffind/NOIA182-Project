@@ -1,11 +1,8 @@
-function [ Theta_k, records ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, max_epoch, Yv, Cv, record_every )
+function [ Theta_k, records ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, learning_rate, moment_gamma, max_epoch, Yv, Cv, record_every )
     
     [~, n_samples] = size(X);
     
-    s = RandStream('mt19937ar', 'Seed', 2567);
-    
-    base_alpha = 1 / 100;
-    base_gamma = 0.7;
+    s = RandStream('mt19937ar', 'Seed', 65743218);
     
     records = zeros(ceil(max_epoch / record_every), 2);
     Theta_k = Theta;
@@ -22,17 +19,16 @@ function [ Theta_k, records ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, ma
             g_k = back_propagation(Xis, C_k, Theta_k, n_layers);
             
             if i <= 100
-                a_k = base_alpha;
-                gamma = base_gamma;
+                a_k = learning_rate;
+                gamma = moment_gamma;
             else
-                a_k = base_alpha * 5 / sqrt(i);
-                gamma = base_gamma * 10 / sqrt(i);
+                a_k = learning_rate * 5 / sqrt(i);
+                gamma = moment_gamma * 10 / sqrt(i);
             end
             
             m_proj = g_k * m_k' * g_k / (norm(g_k)*norm(g_k));
             m_rej = m_k - m_proj;
-            %m_k = m_rej;
-            %gamma = 0;
+            m_k = m_rej;
             
             m_k = a_k * g_k + gamma * m_k;
             Theta_k = Theta_k - m_k;
@@ -44,8 +40,8 @@ function [ Theta_k, records ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, ma
             records(i / record_every, :) = [loss_val, c_p];
             toc;
             
-%              viewFeatures2D(Yv, R);
-%              drawnow update
+%             viewFeatures2D(Yv, R);
+%             drawnow update
             
             fprintf('iter:%d\n\tloss: %f\n\tcorrect: %f\n\n', i, loss_val, c_p);
         end
