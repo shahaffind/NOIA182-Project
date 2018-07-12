@@ -3,9 +3,9 @@ load('./data/PeaksData.mat')
 % parameters
 [n_labels, ~] = size(Ct);
 [dim, ~] = size(Yt);
-max_epoch = 200;
+max_epoch = 100;
 n_layers = 5;
-batch_size = 50;
+batch_size = 100;
 
 learning_rate = 0.01;
 moment_gamma = 0.7;

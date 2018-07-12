@@ -2,14 +2,12 @@ function [ Theta_k, records ] = ResNN_SGD( X, C, Theta, n_layers, batch_size, le
     
     [~, n_samples] = size(X);
     
-    s = RandStream('mt19937ar', 'Seed', 65743218);
-    
     records = zeros(ceil(max_epoch / record_every), 2);
     Theta_k = Theta;
     m_k = zeros(size(Theta));
     tic;
     for i=1:max_epoch
-        idxs = randperm(s, n_samples);
+        idxs = randperm(n_samples);
         for k = 1:(n_samples / batch_size)
             idx_k = idxs((k-1) * batch_size + 1 : k * batch_size);
             X_k = X(:,idx_k);

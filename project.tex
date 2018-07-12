@@ -26,54 +26,88 @@
 
 \maketitle
 
+\section{Project Overview}
+The goal of this project is to implement a simple neural network for classification of small dimention data.\\
+
+The objective function will be softmax regression.\\
+The network will have L residual layers (L is a parameter) of the shape:
+\begin{equation*}
+\begin{split}
+ &  f(W_1, W_2, b, x) = x + W_2 \sigma (W_1 x + b)\\
+ & W_1 \in \mathbb{R}^{n \times n}\\
+ & W_2 \in \mathbb{R}^{n \times n}\\
+ & b \in \mathbb{R}^{n}
+\end{split}
+\end{equation*}
+
 \section{Objective Loss Function}
 \begin{itemize}
  \item
-  We've computed Softmax and Loss in softmax.m and loss.m.
+  We've computed Softmax and Loss in \textbf{softmax.m} and \textbf{loss.m}.
   \item
-  The derivatives for the Softmax are in loss{\_}grad{\_}theta.m (gradient by weights) and loss{\_}grad{\_}x.m (gradient by X).
+  The derivatives for the Softmax are in \textbf{loss{\_}grad{\_}theta.m} (gradient by weights) and \textbf{loss{\_}grad{\_}x.m} (gradient by X).
   \item
-  test{\_}loss.m is the gradient test for the loss function.
+  \textbf{test{\_}loss.m} is the gradient test for the loss function.
   \item
-  loss{\_}SGD.m is an SGD variant for the loss function.
+ \textbf{ loss{\_}SGD.m} is an SGD variant for the loss function.
   \item
-  Q3.m is a script used to run the SGD.
+  \textbf{Q3.m} is a script used to run the SGD.
 \end{itemize}
 We didn't notice a significant difference using different batch size and learning rate.\\
 
 Results for learning rate: 0.005, batch size: 100\\
 
-for validation data:\\
-\includegraphics[width=\textwidth]{loss_sgd_val.png}\\
+\begin{figure}[h!]
+  \caption{Peaks Validation Data}
+  \includegraphics[width=\textwidth]{loss_sgd_val.png}
+\end{figure}
 
-for training data:\\
-\includegraphics[width=\textwidth]{loss_sgd_train.png}\\
+\begin{figure}[h!]
+  \caption{Peaks Training Data}
+  \includegraphics[width=\textwidth]{loss_sgd_train.png}
+\end{figure}
+
+\newpage
 
 \section{Residual Neural Network}
 \subsection{Jacobian Transpose Times Vector}
-ResNN{\_}jac{\_}theta{\_}t{\_}mul.m and ResNN{\_}jac{\_}x{\_}t{\_}mul.m are the jacobian transpose times vector for each layer.\\
+\textbf{ResNN{\_}jac{\_}theta{\_}t{\_}mul.m} and \textbf{ResNN{\_}jac{\_}x{\_}t{\_}mul.m} are the jacobian transpose times vector for each layer.\\
 
 Both can receive multiple samples X (as an n times m matrix), and their respectives V (as an n times m matrix) to multiply by.
 \begin{itemize}
 \item 
-ResNN{\_}jac{\_}theta{\_}t{\_}mul.m returns the average result among all samples.
+\textbf{ResNN{\_}jac{\_}theta{\_}t{\_}mul.m} returns the average result among all samples.
 \item
-ResNN{\_}jac{\_}x{\_}t{\_}mul.m returns the multiplication of each sample with it's v (as an n times m matrix).
+\textbf{ResNN{\_}jac{\_}x{\_}t{\_}mul.m} returns the multiplication of each sample with it's v (as an n times m matrix).
 \end{itemize}
 
+These functions are used in the back propagation process:\\
+\begin{equation*}
+\begin{split}
+  & \nabla_{\theta^{(l)}}f_{l} = \frac{\delta f_{l}}{\delta \theta^{(l)}}^T \nabla_{x^{(l+1)}}f_{l+1}\\
+  & \nabla_{x^{(l)}}f_{l} = \frac{\delta f_{l}}{\delta x^{(l)}}^T \nabla_{x^{(l+1)}}f_{l+1}
+\end{split}
+\end{equation*}
+
 In order to test those functions we've created two auxiliary functions ResNN{\_}jac{\_}theta{\_}mul.m ResNN{\_}jac{\_}x{\_}mul.m\\
+These auxiliary functions compute:
+\begin{equation*}
+  \frac{\delta f}{\delta \theta} v, 
+  \frac{\delta f}{\delta x} v
+\end{equation*}
+
 We used the gradient test to make sure these functions are correct, and then used the jacobian transpose test with the required functions.\\
-Those tests are in test{\_}resnn.m.
+Those tests are in \textbf{test{\_}resnn.m}.
 
 \subsection{Forward Pass and Back Propogation}
-forward{\_}pass.m and back{\_}propogation.m are the functions required.\\
+\textbf{forward{\_}pass.m} and \textbf{back{\_}propogation.m} are the implementations.\\
 
 To test them we created test{\_}net.m that uses forward pass and back propogation to compute the gradient,\\
 then each iteration we used forward pass to compute the loss value after moving to a direction.\\
 
 \subsection{SGD and Conclusions}
-ResNN{\_}SGD.m is the SGD variant for the entire network.\\
-run{\_}net.m is a script used to run the SGD.\\
+\textbf{ResNN{\_}SGD.m} is the SGD variant for the entire network.\\
+\textbf{run{\_}net.m} is a script used to run the SGD.\\
 
 We've tested different network lengths and batch sizes on different data sets.\\
 We got to the following conclusions:\\
@@ -85,6 +119,23 @@ We got to the following conclusions:\\
   \item
   Lowering the learning rate resulted in a more steady but slower convergence. We found out that, generally, 0.01 is a good balance between speed and steadiness.
 \end{itemize}
+
+\begin{figure}[h!]
+  \caption{GMM validation Data - 3 layer}
+  \includegraphics[width=\textwidth]{network_gmm_3layers.png}
+\end{figure}
+
+\begin{figure}[h!]
+  \caption{Peaks validation Data - 10 layer}
+  \includegraphics[width=\textwidth]{network_peaks_10layers.png}
+\end{figure}
+
+\begin{figure}[h!]
+  \caption{SwissRoll validation Data - 15 layer}
+  \includegraphics[width=\textwidth]{network_swissroll_15layers.png}
+\end{figure}
+
+\newpage
 
 \section{Improving on SGD}
 In seek to improve the results of SGD, we tried the following:
@@ -115,32 +166,41 @@ Using these 3 imrovements made us able to reduce the number of layers without hu
 
 Comparison between the 3 improvements.\\
 
-Blue - using only decreasing alpha.\\
-Orange - using decreasing alpha, and decreasing momentum.\\
-Yellow - using all of the improvements specified above.\\
+All of the following figures are with the following parameters - batch size: 50, learning rate: 0.01, gamma (only for momentum): 0.7\\
+Each figure shows 3 different run with each of the 3 improvements, made with the same initial weights (chosen randomly) and same seed for randperm (chosen randomly).\\
 
-GMM\\
-batch size: 50, learning rate: 0.01, number of layers: 1, gamma(only for momentum): 0.7\\
-\includegraphics[width=\textwidth]{rej_m_gmm_1layer.png}
+Blue - Using decreasing alpha only.\\
+Orange - Using decreasing alpha, and decreasing momentum.\\
+Yellow - Using all of the improvements specified above.\\
 
-batch size: 50, learning rate: 0.01, number of layers: 2, gamma(only for momentum): 0.7\\
-\includegraphics[width=\textwidth]{rej_m_gmm_2layers.png}
+\begin{figure}[h!]
+  \caption{GMM Data - 1 layer}
+  \includegraphics[width=\textwidth]{rej_m_gmm_1layer.png}
+\end{figure}
 
-\newpage
-Peaks\\
-batch size: 50, learning rate: 0.01, number of layers: 4, gamma(only for momentum): 0.7\\
-\includegraphics[width=\textwidth]{rej_m_peaks_4layers.png}
+\begin{figure}[h!]
+  \caption{GMM Data - 2 layer}
+  \includegraphics[width=\textwidth]{rej_m_gmm_2layers.png}
+\end{figure}
 
-batch size: 50, learning rate: 0.01, number of layers: 6, gamma(only for momentum): 0.7\\
-\includegraphics[width=\textwidth]{rej_m_peaks_6layers.png}
+\begin{figure}[h!]
+  \caption{Peaks Data - 4 layer}
+  \includegraphics[width=\textwidth]{rej_m_peaks_4layers.png}
+\end{figure}
 
-\newpage
-SwissRoll\\
-batch size: 50, learning rate: 0.01, number of layers: 4, gamma(only for momentum): 0.7\\
-\includegraphics[width=\textwidth]{rej_m_swissroll_4layers.png}
+\begin{figure}[h!]
+  \caption{Peaks Data - 6 layer}
+  \includegraphics[width=\textwidth]{rej_m_peaks_6layers.png}
+\end{figure}
 
-batch size: 50, learning rate: 0.01, number of layers: 5, gamma(only for momentum): 0.7\\
-\includegraphics[width=\textwidth]{rej_m_swissroll_5layers.png}
+\begin{figure}[h!]
+  \caption{SwissRoll Data - 4 layer}
+  \includegraphics[width=\textwidth]{rej_m_swissroll_4layers.png}
+\end{figure}
 
+\begin{figure}[h!]
+  \caption{SwissRoll Data - 5 layer}
+  \includegraphics[width=\textwidth]{rej_m_swissroll_5layers.png}
+\end{figure}
 
 \end{document}
